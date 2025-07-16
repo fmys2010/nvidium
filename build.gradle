@@ -1,3 +1,5 @@
+def mcVersion = project.findProperty("mcVersion") ?: project.minecraft_version
+
 plugins {
     id 'fabric-loom' version '1.7-SNAPSHOT'
     id 'maven-publish'
@@ -22,6 +24,9 @@ targetCompatibility = JavaVersion.VERSION_21
 apply plugin: "fabric-loom"
 
 loom {
+    minecraft {
+        version = mcVersion
+    }
     mixin.defaultRefmapName = "nvidium.refmap.json"
     runs {
         it.configureEach {
@@ -32,13 +37,13 @@ loom {
 
 
 processResources {
-    inputs.properties("version": project.version, "commit": gitCommitHash, "buildtime":buildtime)
-
+    inputs.properties("version": project.version, "commit": gitCommitHash, "buildtime": buildtime)
     archivesBaseName = "nvidium"
     filesMatching("fabric.mod.json") {
         expand "commit": gitCommitHash, "version": project.version, "buildtime": buildtime
     }
 }
+
 
 repositories {
     exclusiveContent {
@@ -55,8 +60,7 @@ repositories {
 }
 
 dependencies {
-    // To change the versions see the gradle.properties file
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    minecraft "com.mojang:minecraft:${mcVersion}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
